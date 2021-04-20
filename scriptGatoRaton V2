@@ -1,0 +1,315 @@
+#! /bin/sh
+#Configuracion de pines
+echo out > /sys/class/gpio/gpio39/direction
+echo out > /sys/class/gpio/gpio38/direction
+echo out > /sys/class/gpio/gpio25/direction
+echo out > /sys/class/gpio/gpio16/direction
+echo out > /sys/class/gpio/gpio19/direction
+echo out > /sys/class/gpio/gpio26/direction
+echo out > /sys/class/gpio/gpio27/direction
+echo out > /sys/class/gpio/gpio24/direction
+
+echo out > /sys/class/gpio/gpio50/direction
+echo 1 > /sys/class/gpio/gpio50/value
+echo 0 > /sys/class/gpio/gpio50/value
+
+echo in > /sys/class/gpio/gpio17/direction
+echo in > /sys/class/gpio/gpio28/direction
+echo in > /sys/class/gpio/gpio15/direction
+
+#Variables
+estado=0
+anterior=0
+varGato=0
+varRaton=-1
+contRandom=0
+aleatorio="5 4 0 1 3 4 5 4 7 0 1 6 3 4 2 1 0 3 6 4 5 4 0 7 2 4 6 3 7 5 0 1 2 4 3 7 0 5 0 6 4 7 4 3 1 6 4 2 7 2 5"
+
+apagar(){
+  echo 0 > /sys/class/gpio/gpio39/value
+  echo 0 > /sys/class/gpio/gpio38/value
+  echo 0 > /sys/class/gpio/gpio25/value
+  echo 0 > /sys/class/gpio/gpio16/value
+  echo 0 > /sys/class/gpio/gpio19/value
+  echo 0 > /sys/class/gpio/gpio26/value
+  echo 0 > /sys/class/gpio/gpio27/value
+  echo 0 > /sys/class/gpio/gpio24/value
+  echo 0 > /sys/class/gpio/gpio50/value
+}
+apagarRaton(){
+
+  case $1 in
+    0) echo 0 > /sys/class/gpio/gpio39/value;;
+    1) echo 0 > /sys/class/gpio/gpio38/value;;
+    2) echo 0 > /sys/class/gpio/gpio25/value;;
+    3) echo 0 > /sys/class/gpio/gpio16/value;;
+    4) echo 0 > /sys/class/gpio/gpio19/value;;
+    5) echo 0 > /sys/class/gpio/gpio26/value;;
+    6) echo 0 > /sys/class/gpio/gpio27/value;;
+    7) echo 0 > /sys/class/gpio/gpio24/value;;
+  esac
+}
+prenderRaton(){
+
+  case $1 in
+    0) echo 1 > /sys/class/gpio/gpio39/value
+       usleep 450000;;
+    1) echo 1 > /sys/class/gpio/gpio38/value
+       usleep 450000;;
+    2) echo 1 > /sys/class/gpio/gpio25/value
+       usleep 450000;;
+    3) echo 1 > /sys/class/gpio/gpio16/value
+       usleep 450000;;
+    4) echo 1 > /sys/class/gpio/gpio19/value
+       usleep 450000;;
+    5) echo 1 > /sys/class/gpio/gpio26/value
+       usleep 450000;;
+    6) echo 1 > /sys/class/gpio/gpio27/value
+       usleep 450000;;
+    7) echo 1 > /sys/class/gpio/gpio24/value
+       usleep 450000;;
+  esac
+}
+estaPrendido(){
+  v0=`cat /sys/class/gpio/gpio39/value`
+  v1=`cat /sys/class/gpio/gpio38/value`
+  v2=`cat /sys/class/gpio/gpio25/value`
+  v3=`cat /sys/class/gpio/gpio16/value`
+  v4=`cat /sys/class/gpio/gpio19/value`
+  v5=`cat /sys/class/gpio/gpio26/value`
+  v6=`cat /sys/class/gpio/gpio27/value`
+  v7=`cat /sys/class/gpio/gpio24/value`
+
+  if [ $v0 == 1 ] && [ $varRaton == 0 ]; then
+     return 0
+  fi
+  if [ $v1 == 1 ] && [ $varRaton == 1 ]; then
+     return 1
+  fi
+  if [ $v2 == 1 ] && [ $varRaton == 2 ]; then
+     return 2
+  fi
+  if [ $v3 == 1 ] && [ $varRaton == 3 ]; then
+     return 3
+  fi
+  if [ $v4 == 1 ] && [ $varRaton == 4 ]; then
+     return 4
+  fi
+  if [ $v5 == 1 ] && [ $varRaton == 5 ]; then
+     return 5
+  fi
+  if [ $v6 == 1 ] && [ $varRaton == 6 ]; then
+     return 6
+  fi
+  if [ $v7 == 1 ] && [ $varRaton == 7 ]; then
+     return 7
+  fi
+
+}
+numRandom(){
+ contAux=0
+ for i in $aleatorio
+ do
+    if [ $contRandom != 51 ]; then
+       if [ $contAux == $contRandom ]; then
+          contRandom=$(($contRandom + 1))
+          if [ $i != $varGato ]; then
+             return $i
+             break
+          else
+             continue
+          fi
+       else
+           contAux=$(($contAux + 1))
+       fi
+    else
+       contRandom=0
+    fi
+ done
+}
+
+moverGatoDer(){
+   case $1 in
+                1)
+                        echo 0 > /sys/class/gpio/gpio39/value
+                        echo 1 > /sys/class/gpio/gpio38/value;;
+                2)
+                        echo 0 > /sys/class/gpio/gpio38/value
+                        echo 1 > /sys/class/gpio/gpio25/value;;
+                3)
+                        echo 0 > /sys/class/gpio/gpio25/value
+                        echo 1 > /sys/class/gpio/gpio16/value;;
+                4)
+                        echo 0 > /sys/class/gpio/gpio16/value
+                        echo 1 > /sys/class/gpio/gpio19/value;;
+                5)
+                        echo 0 > /sys/class/gpio/gpio19/value
+                        echo 1 > /sys/class/gpio/gpio26/value;;
+                6)
+                        echo 0 > /sys/class/gpio/gpio26/value
+                        echo 1 > /sys/class/gpio/gpio27/value;;
+                7)
+                        echo 0 > /sys/class/gpio/gpio27/value
+                        echo 1 > /sys/class/gpio/gpio24/value;;
+                *)
+                        varGato=0
+                        echo 0 > /sys/class/gpio/gpio24/value
+                        echo 1 > /sys/class/gpio/gpio39/value;;
+   esac
+}
+moverGatoIzq(){
+   case $1 in
+                0)
+                        echo 1 > /sys/class/gpio/gpio39/value
+                        echo 0 > /sys/class/gpio/gpio38/value;;
+                1)
+                        echo 1 > /sys/class/gpio/gpio38/value
+                        echo 0 > /sys/class/gpio/gpio25/value;;
+                2)
+                        echo 1 > /sys/class/gpio/gpio25/value
+                        echo 0 > /sys/class/gpio/gpio16/value;;
+                3)
+                        echo 1 > /sys/class/gpio/gpio16/value
+                        echo 0 > /sys/class/gpio/gpio19/value;;
+                4)
+                        echo 1 > /sys/class/gpio/gpio19/value
+                        echo 0 > /sys/class/gpio/gpio26/value;;
+                5)
+                        echo 1 > /sys/class/gpio/gpio26/value
+                        echo 0 > /sys/class/gpio/gpio27/value;;
+                6)
+                        echo 1 > /sys/class/gpio/gpio27/value
+                        echo 0 > /sys/class/gpio/gpio24/value;;
+                *)
+                        varGato=7
+                        echo 1 > /sys/class/gpio/gpio24/value
+                        echo 0 > /sys/class/gpio/gpio39/value;;
+   esac
+}
+pulsadorIzq(){
+while (true)
+do
+  estado=`cat /sys/class/gpio/gpio28/value`
+
+        if [ $estado != $anterior ]; then
+                if [ $estado == 0 ]; then
+                    varGato=$(($varGato - 1))
+                    moverGatoIzq $varGato
+                    if [ $varGato == $varRaton ]; then
+                       echo 1 > /sys/class/gpio/gpio50/value
+                       usleep 500000
+                       echo 0 > /sys/class/gpio/gpio50/value
+                    fi
+                    break
+                fi
+        fi
+
+  anterior=$estado
+  
+  #Movimiento siempre del raton 
+  numRandom
+  varRaton=$?
+  prenderRaton $varRaton
+  estaPrendido
+  ratonAux=$?
+  apagarRaton $ratonAux
+done
+}
+pulsadorDer(){
+while (true)
+do
+  estado=`cat /sys/class/gpio/gpio15/value`
+
+        if [ $estado != $anterior ]; then
+                if [ $estado == 0 ]; then
+                    varGato=$(($varGato + 1))
+                    moverGatoDer $varGato
+                    if [ $varGato == $varRaton ]; then
+                       echo 1 > /sys/class/gpio/gpio50/value
+                       usleep 500000
+                       echo 0 > /sys/class/gpio/gpio50/value
+                    fi
+                    break
+                fi
+        fi
+
+  anterior=$estado
+  
+  #Movimiento siempre del raton
+  numRandom
+  varRaton=$?
+  prenderRaton $varRaton
+  estaPrendido
+  ratonAux=$?
+  apagarRaton $ratonAux
+done
+}
+prender(){
+  echo 1 > /sys/class/gpio/gpio39/value
+  echo 1 > /sys/class/gpio/gpio38/value
+  echo 1 > /sys/class/gpio/gpio25/value
+  echo 1 > /sys/class/gpio/gpio16/value
+  echo 1 > /sys/class/gpio/gpio19/value
+  echo 1 > /sys/class/gpio/gpio26/value
+  echo 1 > /sys/class/gpio/gpio27/value
+  echo 1 > /sys/class/gpio/gpio24/value
+  echo 1 > /sys/class/gpio/gpio50/value
+  usleep 300000
+}
+pulsadorReset(){
+while true
+do
+   estado=`cat /sys/class/gpio/gpio17/value`
+
+ if [ $estado != $anterior ]; then
+        if [ $estado == 0 ]; then
+           apagar
+           usleep 350000
+           prender
+           usleep 200000
+           apagar
+           usleep 200000
+           prender
+           usleep 200000
+           apagar
+           usleep 200000
+           prender
+           usleep 200000
+           apagar
+           varGato=0
+           echo 1 > /sys/class/gpio/gpio39/value
+           break
+        fi
+    fi
+   anterior=$estado
+done
+}
+
+#Prendemos Gato
+apagar
+echo 1 > /sys/class/gpio/gpio39/value
+
+while true
+do
+   pul1=`cat /sys/class/gpio/gpio17/value`
+   echo "Reset:  " $pul1
+   pul2=`cat /sys/class/gpio/gpio28/value`
+   echo "Izq:    " $pul2
+   pul3=`cat /sys/class/gpio/gpio15/value`
+   echo "Der:    " $pul3
+
+   if [ $pul3 == 1 ]; then
+      pulsadorDer
+   elif [ $pul2 == 1 ]; then
+      pulsadorIzq
+   elif [ $pul1 == 1 ]; then
+      pulsadorReset
+   fi
+
+   numRandom
+   varRaton=$?
+   prenderRaton $varRaton
+   estaPrendido
+   ratonAux=$?
+   apagarRaton $ratonAux
+done
